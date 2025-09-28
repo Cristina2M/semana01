@@ -27,13 +27,13 @@ FICHEROS=(".gitignore" ".env.example")
 COUNT=0
 
 # Cálculo del número TOTAL de elementos a verificar para el resumen final.
-# ${#ARRAY[@]} es la sintaxis de Bash para obtener la longitud de un array.
+# ${#ARRAY[@]} para obtener la longitud de un array.
 TOTAL_ELEMENTOS=$(( ${#COMPROBAR_COMANDOS[@]} + ${#COMPROBAR_NPM_GLOBAL[@]} + ${#CARPETAS[@]} + ${#FICHEROS[@]} ))
 
 
-# ----------------------------------------
-# 2. FUNCIONES DE AYUDA (Para Reutilizar Lógica)
-# ----------------------------------------
+
+
+# FUNCIONES
 
 # Función para verificar si un programa está instalado y es ejecutable.
 check_tool() {
@@ -44,13 +44,13 @@ check_tool() {
     # >/dev/null 2>&1 silencia toda la salida del comando, evitando mensajes innecesarios en la consola.
     if command -v "$TOOL_NAME" >/dev/null 2>&1; then
         echo "✅ OK."
-        COUNT=$((COUNT + 1)) # Incrementa el contador de éxito.
+        COUNT=$((COUNT + 1))
     else
         echo "❌ FALTA! Instala $TOOL_NAME."
     fi
 }
 
-# Función para verificar si una CARPETA (directorio) existe.
+# Función para verificar si una carpeta/directorio existe.
 check_dir() {
     local DIR_NAME=$1
     echo -n "  Verificando Carpeta '$DIR_NAME'... "
@@ -58,13 +58,13 @@ check_dir() {
     # [ -d "$DIR_NAME" ] es la condición de prueba: -d significa "existe y es un Directorio".
     if [ -d "$DIR_NAME" ]; then
         echo "✅ OK."
-        COUNT=$((COUNT + 1)) # Incrementa el contador de éxito.
+        COUNT=$((COUNT + 1))
     else
         echo "❌ FALTA! Crea la carpeta '$DIR_NAME'."
     fi
 }
 
-# Función para verificar si un ARCHIVO (fichero) existe.
+# Función para verificar si un archivo/fichero existe.
 check_file() {
     local FILE_NAME=$1
     echo -n "  Verificando Archivo '$FILE_NAME'... "
@@ -72,15 +72,16 @@ check_file() {
     # [ -f "$FILE_NAME" ] es la condición de prueba: -f significa "existe y es un Fichero regular".
     if [ -f "$FILE_NAME" ]; then
         echo "✅ OK."
-        COUNT=$((COUNT + 1)) # Incrementa el contador de éxito.
+        COUNT=$((COUNT + 1))
     else
         echo "❌ FALTA! Crea el archivo '$FILE_NAME'."
     fi
 }
 
-# ----------------------------------------
-# 3. EJECUCIÓN DE LAS VERIFICACIONES
-# ----------------------------------------
+
+
+
+# VERIFICACIONES
 
 echo "--- 1. VERIFICANDO COMANDOS DE SISTEMA ---"
 
@@ -90,13 +91,15 @@ for COMANDO in "${COMPROBAR_COMANDOS[@]}"; do
     check_tool "$COMANDO" # Llama a la función de verificación de comandos para cada elemento.
 done
 
+
 # Bucle For: Itera sobre el array de paquetes globales de npm (como nodemon).
 for PAQUETE in "${COMPROBAR_NPM_GLOBAL[@]}"; do
     check_tool "$PAQUETE" # Se usa la misma función, asumiendo que está en el PATH.
 done
 
 echo -e "\n--- 2. VERIFICANDO CARPETAS ---"
-# El '-e' en 'echo -e' permite interpretar caracteres especiales como \n (salto de línea).
+# El '-e' permite interpretar caracteres especiales como \n (salto de línea).
+
 
 # Bucle For: Itera sobre cada nombre de carpeta en el array CARPETAS.
 for CARPETA in "${CARPETAS[@]}"; do
@@ -105,14 +108,16 @@ done
 
 echo -e "\n--- 3. VERIFICANDO FICHEROS ---"
 
+
 # Bucle For: Itera sobre cada nombre de fichero en el array FICHEROS.
 for FICHERO in "${FICHEROS[@]}"; do
     check_file "$FICHERO" # Llama a la función de verificación de archivos.
 done
 
-# ----------------------------------------
-# 4. RESULTADO FINAL
-# ----------------------------------------
+
+
+
+# RESULTADO
 
 echo -e "\n--- RESUMEN FINAL ---"
 
@@ -120,11 +125,11 @@ echo -e "\n--- RESUMEN FINAL ---"
 # El test '-eq' significa "es igual a" (equal to).
 if [ "$COUNT" -eq "$TOTAL_ELEMENTOS" ]; then
     echo "🎉 ¡ÉXITO! $COUNT/$TOTAL_ELEMENTOS elementos están correctos. El entorno está listo."
-    exit 0 # El código de salida 0 (cero) indica que el script terminó sin errores.
+    exit 0 # El código de salida 0 indica que el script terminó sin errores.
 else
     echo "🛑 ¡ATENCIÓN! Se encontraron fallos: $COUNT de $TOTAL_ELEMENTOS elementos son correctos."
     echo "Por favor, revisa los puntos marcados con ❌ y las dependencias de dotenv si aplica."
-    exit 1 # El código de salida 1 (uno) indica que el script terminó con errores/fallos.
+    exit 1 # El código de salida 1 indica que el script terminó con errores/fallos.
 fi
 
 
